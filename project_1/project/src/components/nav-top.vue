@@ -6,7 +6,7 @@
             <div class="state-center">
                 <router-link to='/main/own'><button class="local-music"></button></router-link>
                 <router-link to='/main/online'><button class="music"></button></router-link>
-                <button class="community"></button>
+                <router-link to='/song'><button class="community"></button></router-link>
             </div>
         </div>
     </div>

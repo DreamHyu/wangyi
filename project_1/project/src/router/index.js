@@ -49,6 +49,10 @@ export default new Router({
     }, {
         path: '/',
         component: require('../pages/index/hello')
+    },
+    {
+        path: '/song',
+        component: require('../components/song')
     }
     ]
 })
