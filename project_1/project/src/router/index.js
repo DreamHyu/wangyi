@@ -44,6 +44,10 @@ export default new Router({
             {
                 path: 'talk',
                 component: require('../components/talk')
+            },
+            {
+                path: '',
+                component: require('../components/own')
             }
         ]
     }, {
@@ -53,6 +57,18 @@ export default new Router({
     {
         path: '/song',
         component: require('../components/song')
+    },
+    {
+        path: '/localmusic',
+        component: require('../pages/localMusic')
+    },
+    {
+        path: '/myradio',
+        component: require('../pages/myRadio')
+    },
+    {
+        path: '/recentMusic',
+        component: require('../pages/recentMusic')
     }
     ]
 })

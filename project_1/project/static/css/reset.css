@@ -12,6 +12,9 @@ button{
 li{
     list-style: none;
 }
+a{
+    text-decoration: none;
+}
 .cleanfix{
     *zoom:1;
 }

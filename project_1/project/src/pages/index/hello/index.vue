@@ -39,9 +39,11 @@ export default {
             } else {
                 this.url = '/api/login/cellphone?phone=' + this.account + '&password=' + this.password
             }
+            let self = this
             this.$http.get(this.url)
             .then(function (res) {
-                this.$store.commit('setAccount', res.data.account.id)
+                console.log(res.data)
+                self.$store.commit('getUserId', res.data.account.id)
             })
         }
     }

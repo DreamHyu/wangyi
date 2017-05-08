@@ -1,11 +1,13 @@
 <template>
     <div>
         <div class="top">
-            <button class="back"></button>
-            <div>
-                <h1 class="getSize">不将就</h1>
-                <P>东南</P>
-            </div>
+            <div class="topHelp">
+                <button class="back" @click="back"></button>
+                <div>
+                    <h1 class="getSize">不将就</h1>
+                    <P>东南</P>
+                </div>
+            </div>    
             <div class="content"></div>
             <div class="fun-key">
                 <ul>
@@ -37,6 +39,7 @@
 </template>
 
 <script type="text/javascript">
+import router from '../router'
 export default {
     data () {
         return {
@@ -44,10 +47,14 @@ export default {
             control_id: true,
             durationTime: 0,
             currentTime: 0,
-            totalTime: ''
+            totalTime: '',
+            pxToRem: 0  /* 将px转换为rem */
         }
     },
     methods: {
+        back () {
+            router.go(-1)
+        },
         control () {
             this.audio = document.getElementById('audio')
             if (this.control_id) {
@@ -72,14 +79,12 @@ export default {
             this.control_id = !this.control_id
             this.currentTime = 0
         },
-        changePlayTime (ev) {
+        changePlayTime (ev) {   /* 进度移动事件,在电脑模式下能动，在移动设备下不管用。待解决 */
             let disX = 0
             let oEvent = ev || event
             let oBar = document.getElementsByClassName('control-time')[0]
             disX = oEvent.clientX - oBar.offsetLeft
-            console.log(disX)
             document.onmousemove = function (ev) {  /* 要点击后才能触发 */
-                console.log('move')
                 var oEvent = ev || event
                 var oLeft = oEvent.clientX - disX
                 if (oLeft < 0) {
@@ -89,11 +94,14 @@ export default {
                 }
                 oBar.style.left = oLeft + 'px'
             }
+            let self = this
             document.onmouseup = function () {
-                console.log('up')
                 document.onmousemove = null
                 document.onmouseup = null
-                console.log(oBar.style.left)
+                let left = parseInt(oBar.style.left)
+                self.currentTime = self.durationTime / 13.5 * (left / 20 - 2)
+                self.audio = document.getElementById('audio')
+                self.audio.currentTime = self.currentTime
             }
         },
         test () {
@@ -101,6 +109,8 @@ export default {
         }
     },
     created () {
+        let screenWith = screen.width
+        this.pxToRem = screenWith / 20
     },
     computed: {
         playTime: function () {
@@ -116,10 +126,6 @@ export default {
 <style type="text/css" scoped>
     div {
         background-color: #535250;
-    }
-    .top {
-        width: 20rem;
-        height: 3rem;
     }
     .top .back {
         float:left;
@@ -283,5 +289,9 @@ export default {
         width: 13.5rem;
         height: 0.2rem;
         overflow: hidden;
+    }
+    .top .topHelp {
+        width: 20rem;
+        height: 3rem;
     }
 </style>

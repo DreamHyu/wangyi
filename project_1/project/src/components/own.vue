@@ -1,26 +1,32 @@
 <template>
     <div>
         <ul class="list">
-            <li>
-                <img src="../../static/img/list-1.png">
-                <p>本地音乐</p>
-                <span>(11)</span>
-            </li>
-            <li>
-                <img src="../../static/img/list-2.png">
-                <p>最近播放</p>
-                <span>(11)</span>
-            </li>
+            <router-link to='/localmusic'>
+                <li>
+                    <img src="../../static/img/list-1.png">
+                    <p>本地音乐</p>
+                    <span>(0)</span>
+                </li>
+            </router-link>
+            <router-link to='/recentmusic'>
+                <li>
+                    <img src="../../static/img/list-2.png">
+                    <p>最近播放</p>
+                    <span>(11)</span>
+                </li>
+            </router-link>
             <li>
                 <img src="../../static/img/list-3.png">
                 <p>下载管理</p>
-                <span>(11)</span>
+                <span>(0)</span>
             </li>
-            <li>
-                <img src="../../static/img/list-4.png">
-                <p>我的电台</p>
-                <span>(11)</span>
-            </li>
+            <router-link to='/myradio'>
+                <li>
+                    <img src="../../static/img/list-4.png">
+                    <p>我的电台</p>
+                    <span>(11)</span>
+                </li>
+            </router-link>
             <li>
                 <img src="../../static/img/list-5.png">
                 <p>我的收藏</p>
@@ -33,15 +39,15 @@
                     <i v-bind:class="{'em1' : show, 'em3' : !show}"></i>
                     <i v-bind:class="{'em2' : show, 'em4' : !show}"></i>
                 </b>
-                <p>创建的歌单()</p>
+                <p>创建的歌单({{playlistsCount}})</p>
                 <button class="fit"></button>
             </div>
             <ul class="song-sheet-list" v-show='!show'>
-                <li>
-                    <img src="">
+                <li v-for='playlist in playlists'>
+                    <img :src="playlist.coverImgUrl">
                     <div>
-                        <h1>我喜欢的音乐</h1>
-                        <p>0首</p>
+                        <h1>{{playlist.name}}</h1>
+                        <p>{{playlist.playCount}}首</p>
                         <button></button>
                     </div>
                 </li>
@@ -54,10 +60,19 @@
 export default {
     data: function () {
         return {
-            show: true
+            show: true, /* 控制歌单的显示与否 */
+            playlists: [{coverImgUrl: '', name: '', id: '', playCount: 0}],
+            playlistsCount: 0
         }
     },
     created: function () {
+        let self = this
+        this.$http.get('/api/user/playlist?uid=' + self.$store.state.userId)
+        .then(function (res) {
+            self.playlistsCount = res.data.playlist.length
+            self.playlists = res.data.playlist
+            self.playlists[0].name = '我喜欢的音乐'
+        })
     },
     methods: {
         ifShow () {
@@ -140,19 +155,19 @@ export default {
         position:absolute;
         bottom:0px;
         left:0px;
-        border-top:0.4rem transparent dashed;
+        border-bottom:0.4rem transparent dashed;
         border-right:0.4rem transparent dashed;
-        border-bottom:0.4rem gray solid;
+        border-top:0.4rem gray solid;
         border-left:0.4rem transparent dashed;
         overflow:hidden;
 
     }
     .em3 {
-        bottom:2px;
-        border-bottom:0.4rem gray  solid;
+        top:2px;
+        border-top:0.4rem gray  solid;
     }
     .em4 {
-        border-bottom:0.4rem #e7e9e9 solid;
+        border-top:0.4rem #e7e9e9 solid;
     }
     .song-sheet-show  p {
         float: left;
@@ -175,10 +190,12 @@ export default {
         background-color: #f2f4f5;
     }
     .song-sheet-list li { 
-        height: 3.1rem;
+        height: 3rem;
         width: 20rem;
+        border-bottom: 0.1rem solid #ebedee;
     }
     .song-sheet-list li img {
+        margin-left: 0.3rem;
         width: 2.9rem;
         height: 2.9rem;
     }

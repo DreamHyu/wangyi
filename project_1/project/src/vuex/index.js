@@ -5,15 +5,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        account: '',
-        password: ''
+        userId: ''
     },
     mutations: {
-        setTopTitle (state, account) {
-            state.account = account
-        },
-        addThemeId (state, password) {
-            state.password = password
+        getUserId (state, id) {
+            state.userId = id
         }
     }
 })
