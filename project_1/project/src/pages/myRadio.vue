@@ -4,7 +4,7 @@
             <button class="back" @click='back'></button>
             <p class="recentp">我的电台</p>
         </div>
-        <div class="song-sheet-show" @click='ifShow'>
+        <div class="song-sheet-show">
             <p>我创建的电台()</p>
         </div>
         <div class="radio-list">

@@ -69,6 +69,11 @@ export default new Router({
     {
         path: '/recentMusic',
         component: require('../pages/recentMusic')
+    },
+    {
+        path: '/usersonglist/:id',
+        name: 'usersonglist',
+        component: require('../pages/user_song_list')
     }
     ]
 })

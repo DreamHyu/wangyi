@@ -39,18 +39,22 @@
                     <i v-bind:class="{'em1' : show, 'em3' : !show}"></i>
                     <i v-bind:class="{'em2' : show, 'em4' : !show}"></i>
                 </b>
-                <p>创建的歌单({{playlistsCount}})</p>
+                <p>创建的歌单({{$store.state.playlistsCount}})</p>
                 <button class="fit"></button>
             </div>
             <ul class="song-sheet-list" v-show='!show'>
-                <li v-for='playlist in playlists'>
-                    <img :src="playlist.coverImgUrl">
-                    <div>
-                        <h1>{{playlist.name}}</h1>
-                        <p>{{playlist.playCount}}首</p>
-                        <button></button>
-                    </div>
-                </li>
+                <div v-for='playlist in playlists'>
+                    <router-link :to="{name: 'usersonglist',params: { id: playlist.id} }">
+                        <li>
+                            <img :src="playlist.coverImgUrl">
+                            <div>
+                                <h1>{{playlist.name}}</h1>
+                                <p>{{playlist.playCount}}首</p>
+                                <button></button>
+                            </div>
+                        </li>
+                    </router-link>
+                </div>
             </ul>
         </div>
     </div>
@@ -61,22 +65,19 @@ export default {
     data: function () {
         return {
             show: true, /* 控制歌单的显示与否 */
-            playlists: [{coverImgUrl: '', name: '', id: '', playCount: 0}],
-            playlistsCount: 0
+            playlists: [{coverImgUrl: '', name: '', id: '', playCount: 0}]
         }
     },
-    created: function () {
-        let self = this
-        this.$http.get('/api/user/playlist?uid=' + self.$store.state.userId)
-        .then(function (res) {
-            self.playlistsCount = res.data.playlist.length
-            self.playlists = res.data.playlist
-            self.playlists[0].name = '我喜欢的音乐'
-        })
-    },
+    created: function () {},
     methods: {
         ifShow () {
             this.show = !this.show
+            let self = this
+            this.$http.get('/api/user/playlist?uid=' + self.$store.state.userId)
+            .then(function (res) {
+                self.playlists = res.data.playlist
+                self.playlists[0].name = '我喜欢的音乐'
+            })
         }
     }
 }

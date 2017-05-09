@@ -13,7 +13,7 @@
                 <input type="text" name="" placeholder="Enter your password" v-model='password'>
             </div>
             <div class="login-button">
-                <router-link to='/main'><button @click='login'>登陆</button></router-link>
+                <button @click='login'>登陆</button>
                 <router-link to='/main'><button>试用登陆</button></router-link>
             </div>  
         </div>
@@ -42,8 +42,13 @@ export default {
             let self = this
             this.$http.get(this.url)
             .then(function (res) {
-                console.log(res.data)
                 self.$store.commit('getUserId', res.data.account.id)
+                let _this = self
+                _this.$http.get('/api/user/playlist?uid=' + _this.$store.state.userId)
+                .then(function (newRes) {
+                    let count = newRes.data.playlist.length
+                    _this.$store.commit('setPlaylistsCount', count)
+                })
             })
         }
     }

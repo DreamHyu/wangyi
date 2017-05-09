@@ -36,9 +36,7 @@ export default {
             router.go(-1)
         }
     },
-    created () {
-        console.log('sorry')
-    }
+    created () {}
 }
 </script>
 
