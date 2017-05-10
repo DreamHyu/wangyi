@@ -7,7 +7,8 @@ export default new Vuex.Store({
     state: {
         userId: '473125880',
         userName: '',
-        playlistsCount: 0   /* 用户歌单数目 */
+        playlistsCount: 0,   /* 用户歌单数目 */
+        songlist: []    /* 播放列表 */
     },
     mutations: {
         getUserId (state, id) {
@@ -15,6 +16,12 @@ export default new Vuex.Store({
         },
         setPlaylistsCount (state, count) {
             state.playlistsCount = count
+        },
+        setSonglist (state, id) {
+            state.songlist = state.songlist.concat(id)
+        },
+        deleteSonglist (state) {
+            state.songlist = []
         }
     }
 })

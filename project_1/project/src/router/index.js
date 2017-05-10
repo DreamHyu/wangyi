@@ -55,7 +55,8 @@ export default new Router({
         component: require('../pages/index/hello')
     },
     {
-        path: '/song',
+        path: '/song/:id',
+        name: 'song',
         component: require('../components/song')
     },
     {

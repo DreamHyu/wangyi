@@ -1,19 +1,19 @@
 <template>
     <div>
         <div class="top">
-            <p class="back" @click='back'></p>
+            <router-link to='/main'><p class="back" ></p></router-link>
             <p>歌单</p>
             <button class="search"></button>
             <p class="more"></p>
         </div>
-        <div class="show">
+        <div class="show" :style="'background-image:url('+playlist.creator.backgroundUrl+')'">
             <div class="show-item">
-                <div class="pic"><img src=""></div>
+                <div class="pic"><img :src="playlist.picUrl"></div>
                 <div class="show-item-name">
-                    <p>测试</p>
+                    <p>{{playlist.name}}</p>
                     <div class="head">
-                        <div class="head-pic"></div>
-                        <p class="head-name">我喜欢的音乐</p>
+                        <div class="head-pic" :style="'background-image:url('+playlist.creator.avatarUrl+')'"></div>
+                        <p class="head-name">{{playlist.creator.nickname}}</p>
                     </div>
                 </div>
                 <div class="cleanfix"></div>
@@ -44,25 +44,71 @@
                 <li>
                     <img src="../../static/img/pause.png">
                     <p>播放全部</p>
-                    <span>(共1首)</span>
+                    <span>(共{{playlist.trackCount}}首)</span>
                 </li>
             </ul>
         </div>
         <div class="songlist">
             <ul>
-                <li>
-                    <div class="song-name">
-                        <h1>Insomnia</h1>
-                        <p>Craig David-Insomnia</p>
-                    </div>
-                    <button class="song-detail"></button>
-                </li>
+                <div v-for="track in playlist.tracks">
+                    <router-link :to="{name: 'song',params: { id: track.id} }">
+                        <li>
+                            <div class="song-name">
+                                <h1>{{track.name}}</h1>
+                                <p>{{track.ar[0].name}}-{{track.al.name}}</p>
+                            </div>
+                            <p class="song-detail"></p>
+                        </li>
+                    </router-link>
+                </div>
             </ul>
         </div>
     </div>
 </template>
 
-<script type="text/javascript"></script>
+<script type="text/javascript">
+// import router from '../router'
+export default {
+    data () {
+        return {
+            playlist: {
+                name: '',
+                picUrl: '',
+                creator: { /* 创建人 */
+                    nickname: '',
+                    backgroundUrl: '',
+                    avatarUrl: ''
+                },
+                trackCount: 0,
+                tracks: [{  /* 歌曲 */
+                    id: '',
+                    name: '',
+                    ar: [{    /* 作者 */
+                        id: '',
+                        name: ''
+                    }],
+                    al: {   /* 专辑 */
+                        id: '',
+                        name: ''
+                    }
+                }]
+            }
+        }
+    },
+    created () {
+        let songListId = this.$route.path.slice(14)
+        let self = this
+        self.$http.get('/api/playlist/detail?id=' + songListId)
+        .then(function (res) {
+            self.playlist = res.data.playlist
+            self.$store.commit('deleteSonglist')
+            for (let i in res.data.playlist.tracks) {
+                self.$store.commit('setSonglist', res.data.playlist.tracks[i].id)
+            }
+        })
+    }
+}
+</script>
 
 <style type="text/css" scoped>
     .top {
@@ -71,7 +117,6 @@
         width: 20rem;
         padding-top: 1rem;
         height: 1.2rem;
-        background-color: #
     }
     .top .back {
         float: left;
@@ -80,7 +125,6 @@
         background-image: url('../../static/img/last.png');
         background-size: 1.2rem 1.2rem;
         margin-left: 0.9rem;
-        opacity: 0.5;
     }
     .top p {
         line-height: 1.2rem;
@@ -101,7 +145,6 @@
     }
     .show {
         width: 20rem;
-        background-color: #3b2b28;
     }
     .show-item {
         padding-top: 3.2rem;
@@ -125,6 +168,10 @@
         font-family: "Microsoft Yahei", Arial;
         color: #f2f0f0;
         font-size: 1rem;
+        width: 10.5rem;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     .show-item .show-item-name .head-pic {
         float: left;
@@ -132,7 +179,6 @@
         width: 1.5rem;
         height: 1.5rem;
         border-radius: 0.75rem;
-        background-color: red;
     }
     .show-item .show-item-name .head-name {
         float: left;

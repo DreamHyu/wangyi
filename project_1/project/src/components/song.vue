@@ -1,14 +1,15 @@
 <template>
     <div>
-        <div class="top">
+        <div class="top" :style="'background-image:url('+vedio.album.picUrl+')'">
+            <div class="zhezao"></div>
             <div class="topHelp">
                 <button class="back" @click="back"></button>
                 <div>
-                    <h1 class="getSize">不将就</h1>
-                    <P>东南</P>
+                    <h1 class="getSize">{{vedio.name}}</h1>
+                    <P>{{vedio.artists[0].name}}</P>
                 </div>
-            </div>    
-            <div class="content"></div>
+            </div>
+            <div class="content" ></div>
             <div class="fun-key">
                 <ul>
                     <li class="like-key"></li>
@@ -28,12 +29,13 @@
             </div>
             <div class="basic-control">
                 <div class="basic-control-center">
-                    <button class="last-song"></button>
+                    <h2 class="last-song" @click='lastSong'></h2>
                     <button class="play-button" @click='control' :class="{'play':control_id,'pause':!control_id}"></button>
-                    <button class="next-song"></button> 
+                    <h2 class="next-song" @click='nextSong'></h2> 
                 </div>
             </div>
-            <audio @timeupdate="updateTime" @ended="next" id="audio" src="../../static/source/周杰伦 - 默.mp3" autoplay="autoplay"></audio>
+            <audio @timeupdate="updateTime" @ended="next" id="audio" :src="vedio.mp3Url" autoplay="autoplay"></audio>
+            <div class="cleanfix"></div>
         </div>
     </div>
 </template>
@@ -48,7 +50,18 @@ export default {
             durationTime: 0,
             currentTime: 0,
             totalTime: '',
-            pxToRem: 0  /* 将px转换为rem */
+            pxToRem: 0,  /* 将px转换为rem */
+            vedio: {    /* 歌曲信息 */
+                name: '',
+                artists: [{
+                    name: ''
+                }],
+                mp3Url: '',
+                album: {
+                    picUrl: ''
+                }
+            },
+            songIndex: 0
         }
     },
     methods: {
@@ -104,13 +117,55 @@ export default {
                 self.audio.currentTime = self.currentTime
             }
         },
-        test () {
-            console.log(1)
+        lastSong () {    /* 前一首 */
+            let id = 0
+            if (this.songIndex === 0) {
+                id = this.$store.state.songlist[this.$store.state.songlist.length - 1]
+                --this.songIndex
+            } else {
+                id = this.$store.state.songlist[this.songIndex - 1]
+                --this.songIndex
+            }
+            let self = this
+            self.$http.get('/api/music/songDetail?ids=' + id)
+            .then(function (res) {
+                self.vedio = res.data.songs[0]
+            })
+        },
+        nextSong () {    /* 后一首 */
+            let id = 0
+            if (this.songIndex === this.$store.state.songlist.length - 1) {
+                id = this.$store.state.songlist[0]
+                ++this.songIndex
+            } else {
+                id = this.$store.state.songlist[this.songIndex + 1]
+                ++this.songIndex
+            }
+            let self = this
+            self.$http.get('/api/music/songDetail?ids=' + id)
+            .then(function (res) {
+                self.vedio = res.data.songs[0]
+            })
         }
     },
     created () {
-        let screenWith = screen.width
-        this.pxToRem = screenWith / 20
+        // let screenWith = screen.width
+        // this.pxToRem = screenWith / 20
+        let id = this.$route.path.slice(6)
+        let self = this
+        self.$http.get('/api/music/songDetail?ids=' + id)
+        .then(function (res) {
+            self.vedio = res.data.songs[0]
+        })
+        let songlistString = this.$store.state.songlist.join(',')
+        if (!songlistString.indexOf(this.$route.path.slice(6))) {    /* 确定当前歌曲所在的位置 */
+            let len = this.$store.state.songlist.length
+            for (let i = 0; i < len; i++) {
+                if (this.$store.state.songlist[i] === this.$route.path.slice(6)) {
+                    this.songIndex = i
+                }
+            }
+        }
     },
     computed: {
         playTime: function () {
@@ -125,7 +180,7 @@ export default {
 
 <style type="text/css" scoped>
     div {
-        background-color: #535250;
+        
     }
     .top .back {
         float:left;
@@ -135,9 +190,7 @@ export default {
         height: 1rem;
         margin-top: 1.1rem;
         margin-left: 1rem;
-    }
-    .top div {
-        float: left;
+        opacity: 0.5;
     }
     .top h1 {
         line-height: 0.9rem;
@@ -155,19 +208,16 @@ export default {
     .content {
         height: 21.6rem;
         width: 20rem;
-        background-color: #333;
     }
     .fun-key {
         height: 1.25rem;
         width: 13.1rem;
         margin: 0 3.45rem;
-        background-color: red;
     }
     .fun-key li {
         float: left;
         width: 1.25rem;
         height: 1.25rem;
-        background-color: blue;
         margin-right: 2.7rem;
     }
     .fun-key .more-key {
@@ -209,7 +259,7 @@ export default {
         z-index: 3;
     }
     .progress-bar .total-time-bar {
-        border-bottom: 0.2rem solid blue;
+        border-bottom: 0.2rem solid black;
         z-index: 2;
     }
     .progress-bar .control-time {
@@ -249,7 +299,7 @@ export default {
         position: absolute;
         top:50%;
         margin-top: -0.65rem;
-        opacity: 0.5;
+        /*opacity: 0.5;*/
     }
     .basic-control .basic-control-center .play-button {
         width: 2.5rem;
@@ -257,7 +307,7 @@ export default {
         border-radius: 1.25rem;
        /* border:#333 solid 0.1rem;*/
         margin-left: 3.6rem;
-        opacity: 0.5;
+      /*  opacity: 0.5;*/
     }
     .basic-control .basic-control-center .next-song {
         width: 1.3rem;
@@ -268,7 +318,7 @@ export default {
         top:50%;
         right: 0;
         margin-top: -0.65rem;
-        opacity: 0.5;
+        /*opacity: 0.5;*/
     }
     .play {
         background-image: url('../../static/img/play.png');
@@ -293,5 +343,18 @@ export default {
     .top .topHelp {
         width: 20rem;
         height: 3rem;
+      /*  background-color: #535250;*/
+    }
+    .top .topHelp div {
+        float: left;
+    }
+    .zhezao {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color:#330066;
+        opacity: 0.5;
     }
 </style>
