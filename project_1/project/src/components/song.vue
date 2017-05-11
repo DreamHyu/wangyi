@@ -91,6 +91,8 @@ export default {
         next () {
             this.control_id = !this.control_id
             this.currentTime = 0
+            this.nextSong()
+            this.control_id = !this.control_id
         },
         changePlayTime (ev) {   /* 进度移动事件,在电脑模式下能动，在移动设备下不管用。待解决 */
             let disX = 0

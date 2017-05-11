@@ -25,15 +25,41 @@
         </div>
         <div class="sheet-list">
             <ul>
-                <li></li>
-                <li></li>
-                <li></li>
+                <div v-for='list in recommend'>
+                    <router-link :to="{name: 'usersonglist',params: { id: list.id} }">
+                        <li>
+                            <img :src="list.picUrl">
+                            <p>{{list.name}}</p>
+                        </li>
+                    </router-link>
+                </div>
             </ul>
         </div>
     </div>
 </template>
 
-<script type="text/javascript"></script>
+<script type="text/javascript">
+export default {
+    data: function () {
+        return {
+            recommend: [{
+                id: '',
+                name: '',
+                picUrl: '',
+                playCount: 0
+            }]
+        }
+    },
+    methods: {},
+    created () {
+        let self = this
+        this.$http.get('/api//recommend/resource')
+        .then(function (res) {
+            self.recommend = res.data.recommend
+        })
+    }
+}
+</script>
 
 <style type="text/css" scoped>
     .show-pic {
@@ -103,6 +129,15 @@
         float: left;
         margin-left: 0.05rem;
         width: 6.6rem;
-        background-color: red;
+    }
+    .sheet-list li img {
+        width: 6.6rem;
+        height: 6.2rem;
+    }
+    .sheet-list li p {
+        font-family: "Microsoft Yahei", Arial;
+        color: #1e1f20;
+        font-size: 0.7rem;
+        margin-left: 0.3rem;
     }
 </style>

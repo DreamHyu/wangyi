@@ -49,7 +49,7 @@
                             <img :src="playlist.coverImgUrl">
                             <div>
                                 <h1>{{playlist.name}}</h1>
-                                <p>{{playlist.playCount}}首</p>
+                                <p>{{playlist.trackCount}}首</p>
                                 <button></button>
                             </div>
                         </li>
@@ -65,7 +65,7 @@ export default {
     data: function () {
         return {
             show: true, /* 控制歌单的显示与否 */
-            playlists: [{coverImgUrl: '', name: '', id: '', playCount: 0}]
+            playlists: [{coverImgUrl: '', name: '', id: '', playCount: 0, trackCount: 0}]
         }
     },
     created: function () {},
